@@ -1,55 +1,55 @@
+-- 1. Dimension Tables First (No Foreign Keys)
 CREATE TABLE clients (
-	client_id INT PRIMARY KEY,
-	score_credit_client FLOAT,
-	categorie_risque TEXT,
-	segment_client TEXT
-
-);
-create table agencies (
-	agence_id int primary key,
-	agence text
+    client_id VARCHAR(50) PRIMARY KEY,
+    score_credit_client FLOAT,
+    categorie_risque VARCHAR(50),
+    segment_client VARCHAR(50)
 );
 
-create table products (
-	produit_id int primary key,
-	produit text
-);
-create table categories (
-	categorie_id int primary key,
-	categorie text
+CREATE TABLE agencies (
+    agence_id SERIAL PRIMARY KEY,
+    agence VARCHAR(100) UNIQUE NOT NULL
 );
 
-create table date (
-	date_id int primary key,
-	date_transaction date,
-	annee int,
-	mois int,
-	trimestre int,
-	jour_semaine text
+CREATE TABLE products (
+    produit_id SERIAL PRIMARY KEY,
+    produit VARCHAR(100) UNIQUE NOT NULL
 );
 
-create table transactions (
-	transaction_id int primary key,
-
-	client_id int not null,
-	agence_id int not null,
-	produit_id int not null,
-	categorie_id int not null,
-	date_id int not null,
-	montant float not null,
-	type_operation text,
-	devise text,
-	taux_change_eur float,
-	montant_eur_verifie float,
-	statut text,
-	is_anomaly boolean,
-
-	FOREIGN KEY (client_id) REFERENCES clients(client_id),
-    FOREIGN KEY (agence_id) REFERENCES agencies(agence_id),
-    FOREIGN KEY (produit_id) REFERENCES products(produit_id),
-    FOREIGN KEY (categorie_id) REFERENCES categories(categorie_id),
-    FOREIGN KEY (date_id) REFERENCES date(date_id)
+CREATE TABLE categories (
+    categorie_id SERIAL PRIMARY KEY,
+    categorie VARCHAR(100) UNIQUE NOT NULL
 );
 
+CREATE TABLE dim_date (
+    date_id SERIAL PRIMARY KEY,
+    date_transaction TIMESTAMP,
+    annee INT,
+    mois INT,
+    trimestre INT,
+    jour_semaine VARCHAR(20)
+);
 
+-- 2. Fact Table (Contains all Foreign Keys)
+CREATE TABLE transactions (
+    transaction_id VARCHAR(50) PRIMARY KEY,
+    client_id VARCHAR(50) NOT NULL,
+    agence_id INT NOT NULL,
+    produit_id INT NOT NULL,
+    categorie_id INT NOT NULL,
+    date_id INT NOT NULL,
+    montant FLOAT NOT NULL,
+    type_operation VARCHAR(20),
+    devise VARCHAR(10),
+    taux_change_eur FLOAT,
+    montant_eur_verifie FLOAT,
+    statut VARCHAR(20),
+    is_anomaly BOOLEAN DEFAULT FALSE,
+    solde_avant FLOAT,
 
+    CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES clients(client_id),
+    CONSTRAINT fk_agence FOREIGN KEY (agence_id) REFERENCES agencies(agence_id),
+    CONSTRAINT fk_product FOREIGN KEY (produit_id) REFERENCES products(produit_id),
+    CONSTRAINT fk_category FOREIGN KEY (categorie_id) REFERENCES categories(categorie_id),
+    CONSTRAINT fk_date FOREIGN KEY (date_id) REFERENCES dim_date(date_id)
+);

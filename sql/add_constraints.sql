@@ -1,20 +1,15 @@
-alter table transactions
-add constraint check_montant_positive check (montant > 0);
+-- Remove the 'positive only' constraint on montant if your CSV contains negative debits
+-- Instead, let's ensure montant is not NULL and check the credit score range
+ALTER TABLE clients 
+ADD CONSTRAINT check_credit_score 
+CHECK (score_credit_client BETWEEN 300 AND 850);
 
-alter table transactions
-add constraint check_taux_change_positive check (taux_change_eur >= 0);
+-- Ensure exchange rate isn't negative
+ALTER TABLE transactions
+ADD CONSTRAINT check_exchange_rate 
+CHECK (taux_change_eur >= 0);
 
-alter table agencies
-add constraint unique_agence unique (agence);
-
-alter table products
-add constraint unique_produit unique (produit);
-
-alter table categories 
-add constraint unique_categorie unique (categorie);
-
-alter table transactions
-alter column type_operation set not null;
-
-alter table transactions
-alter column devise set not null;
+-- Business Logic: Ensure specific columns are never empty
+ALTER TABLE transactions ALTER COLUMN type_operation SET NOT NULL;
+ALTER TABLE transactions ALTER COLUMN devise SET NOT NULL;
+ALTER TABLE transactions ALTER COLUMN statut SET NOT NULL;

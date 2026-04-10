@@ -1,37 +1,30 @@
--- indexes (performance)
+-- Performance: B-Tree Indexes for fast Joins
+CREATE INDEX idx_transactions_client ON transactions(client_id);
+CREATE INDEX idx_transactions_date ON transactions(date_id);
+CREATE INDEX idx_transactions_agence ON transactions(agence_id);
+CREATE INDEX idx_date_timestamp ON dim_date(date_transaction);
 
-create index idx_transactions_client
-on transactions(client_id);
-
-create index idx_transactions_date 
-on transactions(date_id);
-
-create index idx_transactions_agence
-on transactions(agence_id);
-
-create index idx_date_transaction
-on date(date_transaction);
-
--- view (simplify joins)
-
-create view vw_transactions_full as 
-select
-t.transaction_id,
-c.client_id,
-c.segment_client,
-a.agence,
-p.produit,
-cat.categorie,
-d.date_transaction,
-d.annee,
-d.mois,
-t.montant,
-t.type_operation,
-t.devise,
-t.statut
+-- Reporting View: This combines everything into one readable table
+CREATE OR REPLACE VIEW vw_transactions_full AS 
+SELECT
+    t.transaction_id,
+    c.client_id,
+    c.segment_client,
+    c.categorie_risque,
+    a.agence,
+    p.produit,
+    cat.categorie,
+    d.date_transaction,
+    d.annee,
+    d.mois,
+    t.montant,
+    t.type_operation,
+    t.devise,
+    t.statut,
+    t.is_anomaly
 FROM transactions t
-join clients c on t.client_id = c.client_id
-join agencies a on t.agence_id = a.agence_id
-join products p on t.produit_id = p.produit_id
-join categories cat on t.categorie_id = cat.categorie_id
-join date d on t.date_id = d.date_id;
+JOIN clients c ON t.client_id = c.client_id
+JOIN agencies a ON t.agence_id = a.agence_id
+JOIN products p ON t.produit_id = p.produit_id
+JOIN categories cat ON t.categorie_id = cat.categorie_id
+JOIN dim_date d ON t.date_id = d.date_id;
