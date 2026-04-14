@@ -1,7 +1,6 @@
 -- 1. Dimension: Clients
 CREATE TABLE clients (
     client_id VARCHAR(50) PRIMARY KEY,
-    nom_client VARCHAR(100),
     score_credit_client INT, -- Credit scores are integers
     categorie_risque VARCHAR(50) NOT NULL,
     segment_client VARCHAR(50) NOT NULL
