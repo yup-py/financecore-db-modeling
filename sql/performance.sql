@@ -92,8 +92,8 @@ GROUP BY c.segment_client, c.categorie_risque;
 -- High-level summary indicators for your dashboard KPI tiles.
 CREATE OR REPLACE VIEW vw_dashboard_kpis AS
 SELECT 
-    SUM(montant_eur_verifie) as chiffre_affaires_total,
-    AVG(montant_eur_verifie) as panier_moyen,
+    ABS(SUM(montant_eur_verifie)) as chiffre_affaires_total,
+    ABS(AVG(montant_eur_verifie)) as panier_moyen,
     COUNT(CASE WHEN is_anomaly THEN 1 END) as total_anomalies_detectees,
     (SELECT COUNT(DISTINCT client_id) FROM clients) as nombre_clients_actifs
 FROM transactions

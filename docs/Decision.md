@@ -1,4 +1,4 @@
-# 1️⃣ Relational Model Design
+# Relational Model Design
 
 ## 1. Identification of Main Entities
 
